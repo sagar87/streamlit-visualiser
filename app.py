@@ -15,19 +15,6 @@ if "name" not in st.session_state:
     st.session_state["name"] = None
 if "authentication_status" not in st.session_state:
     st.session_state["authentication_status"] = None
-if "current_panel" not in st.session_state:
-    st.session_state["current_panel"] = "Hoechst"
-if "current_channels" not in st.session_state:
-    st.session_state["current_channels"] = ["Hoechst"]
-
-
-def update_current_panel():
-    st.session_state["current_panel"] = st.session_state["current_panel"]
-    st.session_state["current_channels"] = PANELS[st.session_state["current_panel"]]
-
-
-def update_current_channels():
-    st.session_state["current_channels"] = st.session_state["current_channels"]
 
 
 # authentication
