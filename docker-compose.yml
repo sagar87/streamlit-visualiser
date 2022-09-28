@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 5004:8501
+    environment:
+      - ENV=development
+      - PROJECT_KEY=${PROJECT_KEY}
+      - DETA_KEY=${DETA_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_URL=${AWS_URL}
+      - AWS_PATH=${AWS_PATH}
+      - APP_KEY=${APP_KEY}
