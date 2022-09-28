@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit-deployment
+  labels:
+    app: streamlit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamlit
+  template:
+    metadata:
+      labels:
+        app: streamlit
+    spec:
+      containers:
+        - name: streamlit
+          image: sagar87/streamlit-vis:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8501
+          env:
+          - name: ENV
+            value: "production"
+          - name: PROJECT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: deta-credentials
+                key: project
+          - name: DETA_KEY
+            valueFrom:
+              secretKeyRef:
+                name: deta-credentials
+                key: key      
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: key
+          - name: AWS_URL
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: url
+          - name: AWS_PATH
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: path
+          - name: APP_KEY
+            valueFrom:
+              secretKeyRef:
+                name: app-secret
+                key: key            

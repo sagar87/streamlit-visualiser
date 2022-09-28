@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/usr/src/app
+      - ./src:/home/appuser/app
     ports:
       - 5004:8501
     environment:

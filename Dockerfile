@@ -1,23 +1,33 @@
 FROM python:3.9-slim
 
-EXPOSE 8501
+RUN groupadd --gid 1000 appuser \
+    && useradd --uid 1000 --gid 1000 -ms /bin/bash appuser
+
+RUN pip3 install --no-cache-dir --upgrade \
+    pip \
+    virtualenv
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    gcc
-# set working directory
-WORKDIR /usr/src/app
+    software-properties-common \
+    git
 
-# set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+USER appuser
+WORKDIR /home/appuser
 
-RUN python -m pip install --upgrade pip
-# add and install requirements
+# RUN git clone https://github.com/streamlit/streamlit-example.git app
+
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
 
-# add app
-COPY . .
+ENV VIRTUAL_ENV=/home/appuser/venv
+RUN virtualenv ${VIRTUAL_ENV}
+RUN . ${VIRTUAL_ENV}/bin/activate && pip install -r requirements.txt
 
-ENTRYPOINT ["streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# copy app
+COPY ./src ./app
+
+EXPOSE 8501
+
+COPY run.sh /home/appuser
+
+ENTRYPOINT ["./run.sh"]
