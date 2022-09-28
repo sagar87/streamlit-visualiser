@@ -20,7 +20,7 @@ def overview_map(ds, xmin, xmax, ymin, ymax):
 
 
 @st.cache(hash_funcs={xr.core.dataset.Dataset: id}, allow_output_mutation=True)
-def plain_img_box(ds, xmin, xmax, ymin, ymax):
+def plain_img_box(thumbnail, xmin, xmax, ymin, ymax, xdim, ydim):
     fig, ax = plt.subplots()
     # _ = (
     #     ds.im['Hoechst']
@@ -28,12 +28,13 @@ def plain_img_box(ds, xmin, xmax, ymin, ymax):
     #     .pl.add_box([xmin, xmax], [ymin, ymax], color="white")
     #     .pl.imshow(ax=ax)
     # )
+    ax.imshow(thumbnail, extent=[0, xdim, 0, ydim])
     ax.vlines(xmin, ymin, ymax)
     ax.vlines(xmax, ymin, ymax)
     ax.hlines(ymin, xmin, xmax)
     ax.hlines(ymax, xmin, xmax)
-    ax.set_xlim([0, ds.dims["x"]])
-    ax.set_ylim([0, ds.dims["y"]])
+    # ax.set_xlim([0, ds.dims["x"]])
+    # ax.set_ylim([0, ds.dims["y"]])
     ax.axis("off")
     return fig
 
