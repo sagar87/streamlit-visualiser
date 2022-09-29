@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="CODEX explorer", page_icon=":bar_chart:", layout="wide")
+st.set_page_config(page_title="CODEX Viewer", page_icon=":bar_chart:", layout="wide")
 
 # from auth import authenticator
 from constants import CHANNELS, PANELS
@@ -23,21 +23,33 @@ if "panel" not in st.session_state:
 if "selection" not in st.session_state:
     st.session_state["selection"] = PANELS[st.session_state["panel"]]
 
-
-# authentication
-# name, authentication_status, username = authenticator.login("Login")
-# if authentication_status == False:
-#     st.error("Username/Password is incorrect.")
-
-# if authentication_status is None:
-#     st.warning("Please enter your username and password.")
-
-# if authentication_status:
 file = st.session_state["file"]
 selection = st.session_state["selection"]
 
 ds = read_zarr(zarr_dict[file])
 thumb = read_file(thumbnails_dict[file])
+
+
+def validate_input():
+    xmin_new, xmax_new = st.session_state["xrange"]
+    if xmax_new - xmin_new > 2000:
+        st.session_state["xrange"] = [xmin, xmax]
+        st.warning("Please choose x-ranges < 2000 px. Falling back previous xrange.")
+
+    ymin_new, ymax_new = st.session_state["yrange"]
+    if ymax_new - ymin_new > 2000:
+        st.session_state["yrange"] = [ymin, ymax]
+        st.warning("Please choose x-ranges < 2000 px. Falling back previous xrange.")
+
+    selection = st.session_state["selection"]
+    if len(selection) == 0:
+        st.warning("Please select at least one channel.")
+        st.session_state["selection"] = ["Hoechst"]
+
+    if len(selection) >= 6:
+        st.warning("More than 6 channels are currently not supported.")
+        st.session_state["selection"] = st.session_state["selection"][:6]
+
 
 with st.sidebar:
     # authenticator.logout("Logout")
@@ -52,7 +64,6 @@ with st.sidebar:
 
         st.slider(
             "Select x-range:",
-            value=[500, 1000],
             step=1,
             min_value=0,
             max_value=ds.dims["x"],
@@ -62,7 +73,6 @@ with st.sidebar:
 
         st.slider(
             "Select y-range:",
-            value=[500, 1000],
             step=1,
             min_value=0,
             max_value=ds.dims["y"],
@@ -80,13 +90,12 @@ with st.sidebar:
             key="selection",
         )
 
-        submitted = st.form_submit_button("Submit")
+        submitted = st.form_submit_button("Submit", on_click=validate_input)
 
-        if submitted:
-            selection = st.session_state["selection"]
-            xmin, xmax = st.session_state["xrange"]
-            ymin, ymax = st.session_state["yrange"]
 
+selection = st.session_state["selection"]
+xmin, xmax = st.session_state["xrange"]
+ymin, ymax = st.session_state["yrange"]
 
 st.header("CODEX Viewer")
 fig = plain_img(ds, selection, xmin, xmax, ymin, ymax)
