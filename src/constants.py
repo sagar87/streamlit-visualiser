@@ -1,3 +1,10 @@
+import pandas as pd
+import os
+import pathlib
+
+
+
+META = pd.read_csv(os.path.join(pathlib.Path(__file__).parent.resolve(), 'sample.csv'), index_col=0)
 
 def filter_panel(panels, channels):
     panel = {}
@@ -5,13 +12,14 @@ def filter_panel(panels, channels):
         valid_panel = True
         for c in v:
             if c not in channels:
-                valid_panel = False     
+                valid_panel = False
                 break
-        
+
         if valid_panel:
             panel[k] = v
-    
+
     return panel
+
 
 CHANNELS = [
     "Hoechst",
@@ -74,7 +82,7 @@ CHANNELS = [
     "DRAQ5",
 ]
 
-PANELS = {
+CHANNEL_PANELS = {
     "Hoechst": ["Hoechst"],
     "CD4, CD8, PAX5": ["CD4", "CD8", "PAX5"],
     "CD45RA, CD45RO, PAX5": ["CD45RA", "CD45RO", "PAX5"],
@@ -97,4 +105,77 @@ PANELS = {
     "TTOX EM2 (Paper)": ["CD31", "CD45RO", "PD1"],
     "TTOX EM3 (Paper)": ["CD31", "CD45RO", "TIM3"],
     "TDN (Paper)": ["CD31", "TIM3"],
+}
+
+
+CELL_PANELS = {
+    "CD4+ T cells": ["T-CD4 Naive", "T-CD4", "T-FH", "T-REG"],
+    "CD8+ T cells": ["T-TOX Naive", "T-TOX", "T-TOX Exhausted"],
+    "B cells": ["B", "PC"],
+    "All": [
+        "T-CD4 Naive",
+        "T-CD4",
+        "T-REG",
+        "T-FH",
+        "T-TOX Naive",
+        "T-TOX",
+        "T-TOX Exhausted",
+        "T-PR",
+        "B",
+        "PC",
+        "Macro",
+        "DC",
+        "FDC",
+        "NK",
+        "NKT",
+        "Granulo",
+        "Stromal cells",
+        "MC",
+        "Unknown",
+    ],
+}
+
+
+NUM2CELL = {
+    1: "T-CD4 Naive",
+    2: "T-CD4",
+    3: "T-REG",
+    4: "T-FH",
+    5: "T-TOX Naive",
+    6: "T-TOX",
+    7: "T-TOX Exhausted",
+    8: "T-PR",
+    9: "B",
+    10: "PC",
+    11: "Macro",
+    12: "DC",
+    13: "FDC",
+    14: "NK",
+    15: "NKT",
+    16: "Granulo",
+    17: "Stromal cells",
+    18: "MC",
+    19: "Unknown",
+}
+
+CELL2NUM = {
+    "T-CD4 Naive": 1,
+    "T-CD4": 2,
+    "T-REG": 3,
+    "T-FH": 4,
+    "T-TOX Naive": 5,
+    "T-TOX": 6,
+    "T-TOX Exhausted": 7,
+    "T-PR": 8,
+    "B": 9,
+    "PC": 10,
+    "Macro": 11,
+    "DC": 12,
+    "FDC": 13,
+    "NK": 14,
+    "NKT": 15,
+    "Granulo": 16,
+    "Stromal cells": 17,
+    "MC": 18,
+    "Unknown": 19,
 }
