@@ -1,3 +1,18 @@
+
+def filter_panel(panels, channels):
+    panel = {}
+    for k, v in panels.items():
+        valid_panel = True
+        for c in v:
+            if c not in channels:
+                valid_panel = False     
+                break
+        
+        if valid_panel:
+            panel[k] = v
+    
+    return panel
+
 CHANNELS = [
     "Hoechst",
     "BCL6",

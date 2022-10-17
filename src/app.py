@@ -3,33 +3,42 @@ import streamlit as st
 st.set_page_config(page_title="CODEX Viewer", page_icon=":bar_chart:", layout="wide")
 
 # from auth import authenticator
-from constants import CHANNELS, PANELS
+from constants import filter_panel, PANELS
 from drive import get_thumnails_dict, get_zarr_dict, read_file, read_zarr
 from plot import plain_img, plain_img_box
 
+## SESSION STATE config
 zarr_dict = get_zarr_dict()
 thumbnails_dict = get_thumnails_dict()
 
+# session state
 if "xrange" not in st.session_state:
-    st.session_state["xrange"] = [500, 1000]
+    st.session_state["xrange"] = [2000, 2500]
 if "yrange" not in st.session_state:
-    st.session_state["yrange"] = [500, 1000]
+    st.session_state["yrange"] = [2000, 2500]
 if "file_list" not in st.session_state:
     st.session_state["file_list"] = list(zarr_dict.keys())
+
+# load first file by default
 if "file" not in st.session_state:
     st.session_state["file"] = st.session_state["file_list"][0]
-if "panel" not in st.session_state:
-    st.session_state["panel"] = "Hoechst"
-if "selection" not in st.session_state:
-    st.session_state["selection"] = PANELS[st.session_state["panel"]]
 
 file = st.session_state["file"]
-selection = st.session_state["selection"]
-
 ds = read_zarr(zarr_dict[file])
+channels = ds.coords["channels"].values.tolist()
 thumb = read_file(thumbnails_dict[file])
 
+if "panel" not in st.session_state:
+    st.session_state["panel"] = "Hoechst"
 
+panels = filter_panel(PANELS, channels)
+
+if "selection" not in st.session_state:
+    st.session_state["selection"] = panels[st.session_state["panel"]]
+
+selection = st.session_state["selection"]
+
+## INPUT VALIDATION
 def validate_input():
     xmin_new, xmax_new = st.session_state["xrange"]
     if xmax_new - xmin_new > 2000:
@@ -79,14 +88,14 @@ with st.sidebar:
             key="yrange",
         )
 
-        st.write("You are viewing ", ymax - ymin, "pixels along the y axis.")
+        st.write("You are viewing ", ymax - ymin, "pixels along the y-axis.")
 
         st.selectbox("Select a pannel.", PANELS.keys(), key="panel")
 
         st.multiselect(
             "Select the channels:",
-            options=CHANNELS,
-            default=PANELS[st.session_state["panel"]],
+            options=channels,
+            default=panels[st.session_state["panel"]],
             key="selection",
         )
 

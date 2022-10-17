@@ -160,6 +160,8 @@ cython_debug/
 format.sh
 # zarr files
 *.zarr
+# secrets
+kubernetes/secrets*
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
